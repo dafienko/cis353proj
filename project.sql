@@ -1,5 +1,6 @@
 SPOOL project.txt
 SET ECHO ON
+
 /*
 CIS 353 - Database Design Project
 Brandon Rodriguez
@@ -21,6 +22,7 @@ DROP TABLE EmployeePhoneNumbers CASCADE CONSTRAINTS;
 DROP TABLE StoreMediaInventory CASCADE CONSTRAINTS;
 DROP TABLE PurchaseLine CASCADE CONSTRAINTS;
 
+/* create tables */
 CREATE TABLE Account (
 	accountNumber NUMBER(4) PRIMARY KEY,
 	afName VARCHAR2(15),
@@ -29,20 +31,22 @@ CREATE TABLE Account (
 
 CREATE TABLE Media (
 	mediaNumber NUMBER(4) PRIMARY KEY,
-	mediaName VARCHAR2(15),
+	mediaName VARCHAR2(30),
 	mediaType VARCHAR2(10)
 );
 
 CREATE TABLE Store (
 	storeNumber NUMBER(4) PRIMARY KEY,
 	location VARCHAR2(15),
-	managarENumber NUMBER(4)
+	managarENumber NUMBER(4) NOT NULL DEFERRABLE INITIALLY DEFERRED,
+	FOREIGN KEY (managarENumber) REFERENCES Employee(employeeNumber)
 );
 
 CREATE TABLE Employee (
 	employeeNumber NUMBER(4) PRIMARY KEY,
 	efName VARCHAR2(15),
-	worksAtSNumber NUMBER(4)
+	worksAtSNumber NUMBER(4) NOT NULL DEFERRABLE INITIALLY DEFERRED,
+	FOREIGN KEY (worksAtSNumber) REFERENCES Store(storeNumber) 
 );
 
 CREATE TABLE MediaReview (
@@ -60,7 +64,7 @@ CREATE TABLE Purchase (
 	purchaseNumber NUMBER(4) PRIMARY KEY,
 	totalCost FLOAT(2),
 	pDate DATE,
-	cashierENumber NUMBER(4), 
+	cashierENumber NUMBER(4) NOT NULL, 
 	customerANumber NUMBER(4),
 	FOREIGN KEY (cashierENumber) REFERENCES Employee(employeeNumber),
 	FOREIGN KEY (customerANumber) REFERENCES Account(accountNumber)
@@ -83,20 +87,42 @@ CREATE TABLE StoreMediaInventory (
 );
 
 CREATE TABLE PurchaseLine (
-	purchaseNumber NUMBER(4) PRIMARY KEY,
+	purchaseNumber NUMBER(4),
 	mediaNumber NUMBER(4),
 	paidAmt FLOAT(2),
 	refunded BOOLEAN,
+	PRIMARY KEY (purchaseNumber, mediaNumber),
+	FOREIGN KEY (purchaseNumber) REFERENCES Purchase(purchaseNumber),
 	FOREIGN KEY (mediaNumber) REFERENCES Media(mediaNumber)
 );
 
+/* populate tables */
 ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD';
 
-INSERT 
+INSERT INTO Media VALUES (1, 'Star Wars: episode 1', 'movie');
+INSERT INTO Media VALUES (2, 'Harry Potter and the Sorcerer''s Stone', 'book');
+
+INSERT INTO Employee VALUES (1, 'John', 1);
+
+INSERT INTO Store VALUES (1, 'Grand Rapids', 1);
+
+INSERT INTO StoreMediaInventory VALUES (1, 1, 50)
+INSERT INTO StoreMediaInventory VALUES (1, 1, 25)
+
+INSERT INTO Account VALUES (1, 'Dave', 'dave@gmail.com');
+
+INSERT INTO EmployeePhoneNumbers VALUES (1, 6161112222);
+INSERT INTO EmployeePhoneNumbers VALUES (1, 6161234567);
+
+INSERT INTO Purchase VALUES(1, 10.50, '2022-11-21', 1, 1);
+INSERT INTO PurchaseLine VALUES(1, 1, 6.00, FALSE);
+INSERT INTO PurchaseLine VALUES(1, 2, 4.50, TRUE);
 
 SET FEEDBACK ON
 COMMIT;
 
+
+
 COMMIT;
 --
-SPOOL OF
+SPOOL OFF
