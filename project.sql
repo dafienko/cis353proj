@@ -31,33 +31,29 @@ CREATE TABLE Account (
 
 CREATE TABLE Media (
 	mediaNumber NUMBER(4) PRIMARY KEY,
-	mediaName VARCHAR2(30),
+	mediaName VARCHAR2(50),
 	mediaType VARCHAR2(10)
 );
 
 CREATE TABLE Store (
 	storeNumber NUMBER(4) PRIMARY KEY,
 	location VARCHAR2(15),
-	managarENumber NUMBER(4) NOT NULL DEFERRABLE INITIALLY DEFERRED,
-	FOREIGN KEY (managarENumber) REFERENCES Employee(employeeNumber)
+	managarENumber NUMBER(4) NOT NULL DEFERRABLE INITIALLY DEFERRED
 );
 
 CREATE TABLE Employee (
 	employeeNumber NUMBER(4) PRIMARY KEY,
 	efName VARCHAR2(15),
-	worksAtSNumber NUMBER(4) NOT NULL DEFERRABLE INITIALLY DEFERRED,
-	FOREIGN KEY (worksAtSNumber) REFERENCES Store(storeNumber) 
+	worksAtSNumber NUMBER(4) NOT NULL DEFERRABLE INITIALLY DEFERRED
 );
 
 CREATE TABLE MediaReview (
 	accountNumber NUMBER(4),
 	mediaNumber NUMBER(4),
-	confirmedPurchase BOOLEAN,
+	confirmedPurchase number(1),
 	rating NUMBER(1),
-	text TEXT(500),
-	PRIMARY KEY (accountNumber, mediaNumber),
-	FOREIGN KEY (accountNumber) REFERENCES Account(accountNumber),
-	FOREIGN KEY (mediaNumber) REFERENCES Media(mediaNumber)
+	text VARCHAR2(500),
+	PRIMARY KEY (accountNumber, mediaNumber)
 );
 
 CREATE TABLE Purchase (
@@ -65,36 +61,61 @@ CREATE TABLE Purchase (
 	totalCost FLOAT(2),
 	pDate DATE,
 	cashierENumber NUMBER(4) NOT NULL, 
-	customerANumber NUMBER(4),
-	FOREIGN KEY (cashierENumber) REFERENCES Employee(employeeNumber),
-	FOREIGN KEY (customerANumber) REFERENCES Account(accountNumber)
+	customerANumber NUMBER(4)
 );
 
 CREATE TABLE EmployeePhoneNumbers (
 	employeeNumber NUMBER(4),
 	phoneNumber NUMBER(10),
-	PRIMARY KEY (employeeNumber, phoneNumber),
-	FOREIGN KEY (employeeNumber) REFERENCES Employee(employeeNumber)
+	PRIMARY KEY (employeeNumber, phoneNumber)
 );
 
 CREATE TABLE StoreMediaInventory (
 	mediaNumber NUMBER(4),
 	storeNumber NUMBER(4),
 	amountInStock NUMBER(3),
-	PRIMARY KEY (mediaNumber, storeNumber),
-	FOREIGN KEY (mediaNumber) REFERENCES Media(mediaNumber),
-	FOREIGN KEY (storeNumber) REFERENCES Store(storeNumber)
+	PRIMARY KEY (mediaNumber, storeNumber)
 );
 
 CREATE TABLE PurchaseLine (
 	purchaseNumber NUMBER(4),
 	mediaNumber NUMBER(4),
 	paidAmt FLOAT(2),
-	refunded BOOLEAN,
-	PRIMARY KEY (purchaseNumber, mediaNumber),
-	FOREIGN KEY (purchaseNumber) REFERENCES Purchase(purchaseNumber),
-	FOREIGN KEY (mediaNumber) REFERENCES Media(mediaNumber)
+	refunded NUMBER(1),
+	PRIMARY KEY (purchaseNumber, mediaNumber)
 );
+
+ALTER TABLE Store
+ADD FOREIGN KEY (managarENumber) REFERENCES Employee(employeeNumber)
+Deferrable initially deferred;
+
+ALTER TABLE Employee
+ADD FOREIGN KEY (worksAtSNumber) REFERENCES Store(storeNumber)
+Deferrable initially deferred;
+
+ALTER TABLE MediaReview
+ADD FOREIGN KEY (accountNumber) REFERENCES Account(accountNumber);
+ALTER TABLE MediaReview
+ADD FOREIGN KEY (mediaNumber) REFERENCES Media(mediaNumber);
+
+ALTER TABLE Purchase
+ADD FOREIGN KEY (cashierENumber) REFERENCES Employee(employeeNumber);
+ALTER TABLE Purchase
+ADD FOREIGN KEY (customerANumber) REFERENCES Account(accountNumber);
+
+ALTER TABLE EmployeePhoneNumbers
+ADD FOREIGN KEY (employeeNumber) REFERENCES Employee(employeeNumber);
+
+ALTER TABLE StoreMediaInventory
+ADD FOREIGN KEY (mediaNumber) REFERENCES Media(mediaNumber);
+ALTER TABLE StoreMediaInventory
+ADD FOREIGN KEY (storeNumber) REFERENCES Store(storeNumber);
+
+ALTER TABLE PurchaseLine
+ADD FOREIGN KEY (purchaseNumber) REFERENCES Purchase(purchaseNumber);
+ALTER TABLE PurchaseLine
+ADD FOREIGN KEY (mediaNumber) REFERENCES Media(mediaNumber);
+
 
 /* populate tables */
 ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD';
@@ -106,8 +127,8 @@ INSERT INTO Employee VALUES (1, 'John', 1);
 
 INSERT INTO Store VALUES (1, 'Grand Rapids', 1);
 
-INSERT INTO StoreMediaInventory VALUES (1, 1, 50)
-INSERT INTO StoreMediaInventory VALUES (1, 1, 25)
+INSERT INTO StoreMediaInventory VALUES (1, 1, 50);
+INSERT INTO StoreMediaInventory VALUES (2, 1, 25);
 
 INSERT INTO Account VALUES (1, 'Dave', 'dave@gmail.com');
 
@@ -115,13 +136,13 @@ INSERT INTO EmployeePhoneNumbers VALUES (1, 6161112222);
 INSERT INTO EmployeePhoneNumbers VALUES (1, 6161234567);
 
 INSERT INTO Purchase VALUES(1, 10.50, '2022-11-21', 1, 1);
-INSERT INTO PurchaseLine VALUES(1, 1, 6.00, FALSE);
-INSERT INTO PurchaseLine VALUES(1, 2, 4.50, TRUE);
+INSERT INTO PurchaseLine VALUES(1, 1, 6.00, 0);
+INSERT INTO PurchaseLine VALUES(1, 2, 4.50, 1);
 
 SET FEEDBACK ON
 COMMIT;
 
-
+/* queries */
 
 COMMIT;
 --
