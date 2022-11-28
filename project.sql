@@ -10,7 +10,6 @@ Erik Haney
 Harrison Corbin
 */
 
-SET FEEDBACK OFF
 
 DROP TABLE Account CASCADE CONSTRAINTS;
 DROP TABLE Media CASCADE CONSTRAINTS;
@@ -118,7 +117,9 @@ ADD FOREIGN KEY (mediaNumber) REFERENCES Media(mediaNumber);
 
 
 /* populate tables */
+
 ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD';
+SET FEEDBACK OFF
 
 INSERT INTO Media VALUES (1, 'Star Wars: episode 1', 'movie');
 INSERT INTO Media VALUES (2, 'Harry Potter and the Sorcerer''s Stone', 'book');
@@ -141,6 +142,18 @@ INSERT INTO PurchaseLine VALUES(1, 2, 4.50, 1);
 
 SET FEEDBACK ON
 COMMIT;
+
+/* queries to display tables*/
+SELECT * FROM Account;
+SELECT * FROM Media; 
+SELECT * FROM Store;
+SELECT * FROM Employee;
+SELECT * FROM MediaReview;
+SELECT * FROM Purchase;
+SELECT * FROM EmployeePhoneNumbers;
+SELECT * FROM StoreMediaInventory;
+SELECT * FROM PurchaseLine;
+
 
 /* queries */
 
