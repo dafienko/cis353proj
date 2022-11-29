@@ -112,8 +112,6 @@ Deferrable initially deferred;
 
 ALTER TABLE MediaReview
 ADD FOREIGN KEY (accountNumber) REFERENCES Account(accountNumber);
-ALTER TABLE MediaReview
-ADD FOREIGN KEY (mediaNumber) REFERENCES Media(mediaNumber);
 
 ALTER TABLE Purchase
 ADD FOREIGN KEY (cashierENumber) REFERENCES Employee(employeeNumber);
