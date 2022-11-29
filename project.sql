@@ -41,7 +41,7 @@ CREATE TABLE Media (
 CREATE TABLE Store (
 	storeNumber NUMBER(4) PRIMARY KEY,
 	location VARCHAR2(15),
-	managarENumber NUMBER(4) NOT NULL DEFERRABLE INITIALLY DEFERRED
+	managerENumber NUMBER(4) NOT NULL DEFERRABLE INITIALLY DEFERRED
 );
 
 CREATE TABLE Employee (
@@ -146,13 +146,24 @@ INSERT INTO Media VALUES (1, 'Star Wars: episode 1', 'movie');
 INSERT INTO Media VALUES (2, 'Harry Potter and the Sorcerer''s Stone', 'book');
 
 INSERT INTO Employee VALUES (1, 'John', 1);
+INSERT INTO Employee VALUES (2, 'Harry', 2);
+INSERT INTO Employee VALUES (3, 'Bob', 2);
+INSERT INTO Employee VALUES (4, 'Brian', 2);
+INSERT INTO Employee VALUES (5, 'Jonny', 2);
 
 INSERT INTO Store VALUES (1, 'Grand Rapids', 1);
+INSERT INTO Store VALUES (2, 'Lansing', 2);
 
 INSERT INTO StoreMediaInventory VALUES (1, 1, 50);
 INSERT INTO StoreMediaInventory VALUES (2, 1, 25);
 
 INSERT INTO Account VALUES (1, 'Dave', 'dave@gmail.com');
+INSERT INTO Account VALUES (2, 'Mike', 'mike@gmail.com');
+INSERT INTO Account VALUES (3, 'Erik', 'Erik@gmail.com');
+INSERT INTO Account VALUES (4, 'Tree', 'Tree@gmail.com');
+
+INSERT INTO MediaReview VALUES (2, 1, 1, 5, 'Great Movie');
+INSERT INTO MediaReview VALUES (3, 2, 1, 3, 'Mid ngl');
 
 INSERT INTO EmployeePhoneNumbers VALUES (1, 6161112222);
 INSERT INTO EmployeePhoneNumbers VALUES (1, 6161234567);
