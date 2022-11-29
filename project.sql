@@ -25,7 +25,11 @@ DROP TABLE PurchaseLine CASCADE CONSTRAINTS;
 CREATE TABLE Account (
 	accountNumber NUMBER(4) PRIMARY KEY,
 	afName VARCHAR2(15),
-	email VARCHAR2(30)
+	email VARCHAR2(30),
+	/*************************************************
+	Account Number is the primary key of Account
+	 *****************************************************/	
+	CONSTRAINT IC1 PRIMARY KEY (accountNumber);
 );
 
 CREATE TABLE Media (
@@ -52,7 +56,16 @@ CREATE TABLE MediaReview (
 	confirmedPurchase number(1),
 	rating NUMBER(1),
 	text VARCHAR2(500),
-	PRIMARY KEY (accountNumber, mediaNumber)
+	PRIMARY KEY (accountNumber, mediaNumber),
+	/***********************************************************
+	MediaNumber of Media table will have a reference to 
+	the mediaReview table if any reviews are written about that media.
+	 **************************************************************/	
+	CONSTRAINT IC2 FOREIGN KEY (MediaNumber) REFERENCES Media (MediaNumber),
+	/***********************************************************
+	A review must be between 1 and 5 stars
+	 **************************************************************/	
+	CONSTRAINT IC3 CHECK (rating >= 1 AND rating <= 5)
 );
 
 CREATE TABLE Purchase (
@@ -81,7 +94,12 @@ CREATE TABLE PurchaseLine (
 	mediaNumber NUMBER(4),
 	paidAmt FLOAT(2),
 	refunded NUMBER(1),
-	PRIMARY KEY (purchaseNumber, mediaNumber)
+	PRIMARY KEY (purchaseNumber, mediaNumber),
+	/*************************************************
+	A refund must be a PurchaseLine above $0 and it must 
+	not already be a refunded purchaseLine
+	 *****************************************************/
+	CONSTRAINT C4 CHECK (paidAmt > 0 AND refunded = 0)
 );
 
 ALTER TABLE Store
@@ -114,6 +132,11 @@ ALTER TABLE PurchaseLine
 ADD FOREIGN KEY (purchaseNumber) REFERENCES Purchase(purchaseNumber);
 ALTER TABLE PurchaseLine
 ADD FOREIGN KEY (mediaNumber) REFERENCES Media(mediaNumber);
+
+
+
+
+
 
 
 /* populate tables */
