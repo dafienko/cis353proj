@@ -23,13 +23,13 @@ DROP TABLE PurchaseLine CASCADE CONSTRAINTS;
 
 /* create tables */
 CREATE TABLE Account (
-	accountNumber NUMBER(4) PRIMARY KEY,
+	accountNumber NUMBER(4),
 	afName VARCHAR2(15),
 	email VARCHAR2(30),
 	/*************************************************
 	Account Number is the primary key of Account
 	 *****************************************************/	
-	CONSTRAINT IC1 PRIMARY KEY (accountNumber)
+	CONSTRAINT C1 PRIMARY KEY (accountNumber)
 );
 
 CREATE TABLE Media (
@@ -61,11 +61,11 @@ CREATE TABLE MediaReview (
 	MediaNumber of Media table will have a reference to 
 	the mediaReview table if any reviews are written about that media.
 	 **************************************************************/	
-	CONSTRAINT IC2 FOREIGN KEY (MediaNumber) REFERENCES Media (MediaNumber),
+	CONSTRAINT C2 FOREIGN KEY (MediaNumber) REFERENCES Media (MediaNumber),
 	/***********************************************************
 	A review must be between 1 and 5 stars
 	 **************************************************************/	
-	CONSTRAINT IC3 CHECK (rating >= 1 AND rating <= 5)
+	CONSTRAINT C3 CHECK (rating >= 1 AND rating <= 5)
 );
 
 CREATE TABLE Purchase (
