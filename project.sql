@@ -29,7 +29,7 @@ CREATE TABLE Account (
 	/*************************************************
 	Account Number is the primary key of Account
 	 *****************************************************/	
-	CONSTRAINT IC1 PRIMARY KEY (accountNumber);
+	CONSTRAINT IC1 PRIMARY KEY (accountNumber)
 );
 
 CREATE TABLE Media (
