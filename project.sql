@@ -71,7 +71,7 @@ CREATE TABLE MediaReview (
 	/***********************************************************
 	A review can only be 5 stars if the purchase is confirmed
 	 **************************************************************/	
-	CONSTRAINT C4 CHECK confirmedPurchase = 0 OR rating < 5
+	CONSTRAINT C4 CHECK (confirmedPurchase = 0 OR rating < 5)
 );
 
 CREATE TABLE Purchase (
@@ -246,13 +246,6 @@ WHERE NOT EXISTS((SELECT M.MediaNumber
 SELECT A.AccountNumber, A.afname, P.PurchaseNumber
 FROM Account A LEFT OUTER JOIN Purchase P ON A.AccountNumber = P.CustomerANumber
 ORDER BY A.AccountNumber;
-
-
-accountNumber NUMBER(4),
-	mediaNumber NUMBER(4),
-	confirmedPurchase number(1),
-	rating NUMBER(1),
-	text VARCHAR2(500),
 
 --Insert/delete/update to test ICs
 --These are meant to throw errors
