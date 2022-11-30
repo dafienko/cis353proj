@@ -215,7 +215,7 @@ SELECT M.MediaName, COUNT(*)
 FROM Media M, PurchaseLine PL
 WHERE M.MediaNumber = PL.MediaNumber
 GROUP BY M.MediaName
-HAVING COUNT(*) > 5
+HAVING COUNT(*) > 4
 ORDER BY COUNT(*) DESC;
 
 -- Correlated subquery
