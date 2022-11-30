@@ -56,22 +56,19 @@ CREATE TABLE MediaReview (
 	rating NUMBER(1),
 	text VARCHAR2(500),
 	PRIMARY KEY (accountNumber, mediaNumber),
-	
 	/***********************************************************
 	MediaNumber of Media table will have a reference to 
 	the mediaReview table if any reviews are written about that media.
 	 **************************************************************/	
 	CONSTRAINT C2 FOREIGN KEY (MediaNumber) REFERENCES Media (MediaNumber),
-	
 	/***********************************************************
 	A review must be between 1 and 5 stars
 	 **************************************************************/	
 	CONSTRAINT C3 CHECK (rating >= 1 AND rating <= 5),
-
 	/***********************************************************
 	A review can only be 5 stars if the purchase is confirmed
 	 **************************************************************/	
-	CONSTRAINT C4 CHECK (confirmedPurchase = 0 OR rating < 5)
+	CONSTRAINT C4 CHECK (confirmedPurchase = 1 OR rating < 5)
 );
 
 CREATE TABLE Purchase (
@@ -100,7 +97,7 @@ CREATE TABLE PurchaseLine (
 	mediaNumber NUMBER(4),
 	paidAmt FLOAT(2),
 	refunded NUMBER(1),
-	PRIMARY KEY (purchaseNumber, mediaNumber),
+	PRIMARY KEY (purchaseNumber, mediaNumber)
 );
 
 ALTER TABLE Store
@@ -252,7 +249,7 @@ ORDER BY A.AccountNumber;
 INSERT INTO Account VALUES (1, 'Jane', 'jane@jane.com');
 INSERT INTO MediaReview VALUES (1, 49, 1, 3, 'Awesome'); 
 INSERT INTO MediaReview VALUES (1, 1, 1, 7, 'Awesome'); 
-INSERT INTO MediaReview VALUES (1, 0, 1, 5, 'Awesome'); 
+INSERT INTO MediaReview VALUES (1, 1, 0, 5, 'Awesome'); 
 
 COMMIT;
 --
