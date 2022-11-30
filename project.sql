@@ -170,7 +170,6 @@ INSERT INTO EmployeePhoneNumbers VALUES (1, 6161234567);
 
 INSERT INTO Purchase VALUES(1, 10.50, '2022-11-21', 1, 1);
 INSERT INTO PurchaseLine VALUES(1, 1, 6.00, 0);
-INSERT INTO PurchaseLine VALUES(1, 2, 4.50, 1);
 
 SET FEEDBACK ON
 COMMIT;
@@ -250,6 +249,14 @@ WHERE NOT EXISTS((SELECT M.MediaNumber
 SELECT A.AccountNumber, A.afname, P.PurchaseNumber
 FROM Account A LEFT OUTER JOIN Purchase P ON A.AccountNumber = P.CustomerANumber
 ORDER BY A.AccountNumber;
+
+--Insert/delete/update to test ICs
+--These are meant to throw errors
+INSERT INTO Account VALUES (1, 'Jane', 'jane@jane.com');
+INSERT INTO MediaReview VALUES (1, 49, 1, 5, 'Awesome'); 
+INSERT INTO MediaReview VALUES (1, 1, 1, 7, 'Awesome'); 
+INSERT INTO PurchaseLine VALUES (1, 2, 4.50, 1);
+
 COMMIT;
 --
 SPOOL OFF
