@@ -194,24 +194,62 @@ SELECT MAX(rating) as highest_rating
 FROM MediaReview;
 --(52) Non correlated sub query
 -- Find accounts that have not left a media review
-SELECT accountNumber FROM Account 
-WHERE NOT EXISTS (SELECT accountNumber FROM MediaReview);
+SELECT accountNumber 
+FROM Account 
+WHERE accountNumber NOT IN (SELECT accountNumber FROM MediaReview);
 --(40) Self join
 --Find pairs of employees that work in the same department
---Needs Fix!!!
-SELECT distinct e1.employeeNumber, e1.efName, e2.employeeNumber, e2.efName
+--
+SELECT distinct e1.efName, e1.worksatSNumber, e2.efName, e2.worksAtSNumber
 FROM Employee e1, Employee e2
-WHERE e1.worksatSNumber = e2.worksAtSNumber AND e1.efName != e2.efName;
---join involving at least four relations
+WHERE e1.worksatSNumber = e2.worksAtSNumber AND 
+      e1.EmployeeNumber > e2.EmployeeNumber;
+--Join involving at least four relations
+--Find the account name, account email, employee name, purchase number, and purchase date of every account and employee involved in a sale of "Star Wars: episode 1".
 --
+SELECT A.afname, A.email, E.EFName, P.PurchaseNumber, P.PDate
+FROM Account A, Media M, Purchase P, PurchaseLine PL, Employee E
+WHERE A.accountNumber = P.customeranumber AND
+      E.EmployeeNumber = P.CashiereNumber AND
+      P.PurchaseNumber = PL.PurchaseNumber AND
+      M.MediaName = 'Star Wars: episode 1' AND
+      PL.MediaNumber = M.MediaNumber;
 --Group by, having, and order by in the same query
+--Find the media name and total number of sales of each media product that has at least five sales, and order them from most sales to least sales.
 --
---Correlated subquery
+SELECT M.MediaName, COUNT(*)
+FROM Media M, PurchaseLine PL
+WHERE M.MediaNumber = PL.MediaNumber
+GROUP BY M.MediaName
+HAVING COUNT(*) > 5
+ORDER BY COUNT(*) DESC;
+-- Correlated subquery
+--Find the account number and name of all accounts who have left a media review.
 --
+SELECT A.AccountNumber, A.AFName
+FROM Account A
+WHERE EXISTS(SELECT MR.AccountNumber 
+             FROM MediaReview MR
+             WHERE MR.AccountNumber = A.AccountNumber);
+
 --Relational DIVISION query
+--Find the store number and location of every store which has all media products in stock.
 --
+SELECT S.StoreNumber, S.Location
+FROM Store S
+WHERE NOT EXISTS((SELECT M.MediaNumber
+                  FROM Media M)
+                  MINUS
+                  (SELECT M.MediaNumber
+                  FROM Media M, StoreMediaInventory SI
+                  WHERE M.MediaNumber = SI.MediaNumber AND
+                  S.StoreNumber = SI.StoreNumber));
 --Outer join query
+--Find all account numbers and names, and any purchases made by each account.
 --
+SELECT A.AccountNumber, A.afname, P.PurchaseNumber
+FROM Account A LEFT OUTER JOIN Purchase P ON A.AccountNumber = P.CustomerANumber
+ORDER BY A.AccountNumber;
 COMMIT;
 --
 SPOOL OFF
