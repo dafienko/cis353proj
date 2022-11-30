@@ -10,7 +10,6 @@ Erik Haney
 Harrison Corbin
 */
 
-
 DROP TABLE Account CASCADE CONSTRAINTS;
 DROP TABLE Media CASCADE CONSTRAINTS;
 DROP TABLE Store CASCADE CONSTRAINTS;
@@ -57,15 +56,22 @@ CREATE TABLE MediaReview (
 	rating NUMBER(1),
 	text VARCHAR2(500),
 	PRIMARY KEY (accountNumber, mediaNumber),
+	
 	/***********************************************************
 	MediaNumber of Media table will have a reference to 
 	the mediaReview table if any reviews are written about that media.
 	 **************************************************************/	
 	CONSTRAINT C2 FOREIGN KEY (MediaNumber) REFERENCES Media (MediaNumber),
+	
 	/***********************************************************
 	A review must be between 1 and 5 stars
 	 **************************************************************/	
-	CONSTRAINT C3 CHECK (rating >= 1 AND rating <= 5)
+	CONSTRAINT C3 CHECK (rating >= 1 AND rating <= 5),
+
+	/***********************************************************
+	A review can only be 5 stars if the purchase is confirmed
+	 **************************************************************/	
+	CONSTRAINT C4 CHECK confirmedPurchase = 0 OR rating < 5
 );
 
 CREATE TABLE Purchase (
@@ -95,11 +101,6 @@ CREATE TABLE PurchaseLine (
 	paidAmt FLOAT(2),
 	refunded NUMBER(1),
 	PRIMARY KEY (purchaseNumber, mediaNumber),
-	/*************************************************
-	A refund must be a PurchaseLine above $0 and it must 
-	not already be a refunded purchaseLine
-	 *****************************************************/
-	CONSTRAINT C4 CHECK (paidAmt > 0 AND refunded = 0)
 );
 
 ALTER TABLE Store
@@ -130,10 +131,6 @@ ALTER TABLE PurchaseLine
 ADD FOREIGN KEY (purchaseNumber) REFERENCES Purchase(purchaseNumber);
 ALTER TABLE PurchaseLine
 ADD FOREIGN KEY (mediaNumber) REFERENCES Media(mediaNumber);
-
-
-
-
 
 
 
@@ -191,21 +188,22 @@ SELECT * FROM PurchaseLine;
 --Find the highest rating
 SELECT MAX(rating) as highest_rating
 FROM MediaReview;
+
 --(52) Non correlated sub query
 -- Find accounts that have not left a media review
 SELECT accountNumber 
 FROM Account 
 WHERE accountNumber NOT IN (SELECT accountNumber FROM MediaReview);
+
 --(40) Self join
 --Find pairs of employees that work in the same department
---
 SELECT distinct e1.efName, e1.worksatSNumber, e2.efName, e2.worksAtSNumber
 FROM Employee e1, Employee e2
 WHERE e1.worksatSNumber = e2.worksAtSNumber AND 
       e1.EmployeeNumber > e2.EmployeeNumber;
+
 --Join involving at least four relations
 --Find the account name, account email, employee name, purchase number, and purchase date of every account and employee involved in a sale of "Star Wars: episode 1".
---
 SELECT A.afname, A.email, E.EFName, P.PurchaseNumber, P.PDate
 FROM Account A, Media M, Purchase P, PurchaseLine PL, Employee E
 WHERE A.accountNumber = P.customeranumber AND
@@ -213,18 +211,18 @@ WHERE A.accountNumber = P.customeranumber AND
       P.PurchaseNumber = PL.PurchaseNumber AND
       M.MediaName = 'Star Wars: episode 1' AND
       PL.MediaNumber = M.MediaNumber;
+
 --Group by, having, and order by in the same query
 --Find the media name and total number of sales of each media product that has at least five sales, and order them from most sales to least sales.
---
 SELECT M.MediaName, COUNT(*)
 FROM Media M, PurchaseLine PL
 WHERE M.MediaNumber = PL.MediaNumber
 GROUP BY M.MediaName
 HAVING COUNT(*) > 5
 ORDER BY COUNT(*) DESC;
+
 -- Correlated subquery
 --Find the account number and name of all accounts who have left a media review.
---
 SELECT A.AccountNumber, A.AFName
 FROM Account A
 WHERE EXISTS(SELECT MR.AccountNumber 
@@ -233,7 +231,6 @@ WHERE EXISTS(SELECT MR.AccountNumber
 
 --Relational DIVISION query
 --Find the store number and location of every store which has all media products in stock.
---
 SELECT S.StoreNumber, S.Location
 FROM Store S
 WHERE NOT EXISTS((SELECT M.MediaNumber
@@ -243,19 +240,26 @@ WHERE NOT EXISTS((SELECT M.MediaNumber
                   FROM Media M, StoreMediaInventory SI
                   WHERE M.MediaNumber = SI.MediaNumber AND
                   S.StoreNumber = SI.StoreNumber));
+
 --Outer join query
 --Find all account numbers and names, and any purchases made by each account.
---
 SELECT A.AccountNumber, A.afname, P.PurchaseNumber
 FROM Account A LEFT OUTER JOIN Purchase P ON A.AccountNumber = P.CustomerANumber
 ORDER BY A.AccountNumber;
 
+
+accountNumber NUMBER(4),
+	mediaNumber NUMBER(4),
+	confirmedPurchase number(1),
+	rating NUMBER(1),
+	text VARCHAR2(500),
+
 --Insert/delete/update to test ICs
 --These are meant to throw errors
 INSERT INTO Account VALUES (1, 'Jane', 'jane@jane.com');
-INSERT INTO MediaReview VALUES (1, 49, 1, 5, 'Awesome'); 
+INSERT INTO MediaReview VALUES (1, 49, 1, 3, 'Awesome'); 
 INSERT INTO MediaReview VALUES (1, 1, 1, 7, 'Awesome'); 
-INSERT INTO PurchaseLine VALUES (1, 2, 4.50, 1);
+INSERT INTO MediaReview VALUES (1, 0, 1, 5, 'Awesome'); 
 
 COMMIT;
 --
